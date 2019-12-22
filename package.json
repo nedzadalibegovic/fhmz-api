@@ -1,16 +1,24 @@
 {
   "name": "weather-app",
   "version": "0.0.1",
-  "description": "",
+  "description": "weather-app",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "author": "Nedzad Alibegovic",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "node-fetch": "^2.6.0",
     "xml-js": "^1.6.11"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nedzadalibegovic/weather-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nedzadalibegovic/weather-app/issues"
+  },
+  "homepage": "https://github.com/nedzadalibegovic/weather-app#readme"
 }
