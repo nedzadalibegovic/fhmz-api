@@ -1,0 +1,20 @@
+name: "Weather Data Fetcher"
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  fetch_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repo'
+        uses: actions/checkout@v1
+      - name: 'Install Node.js'
+        uses: actions/setup-node@v1
+      - name: 'Install npm dependencies'
+        run: npm install
+      - name: 'Fetch new data'
+        run: node fetch_data.js
+        env:
+          MONGO: ${{ secrets.MONGO }}
