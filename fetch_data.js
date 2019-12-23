@@ -1,8 +1,10 @@
+require('dotenv').config();
 const fetch = require('node-fetch');
 const convert = require('xml-js');
+const mongoose = require('mongoose');
+const Forecast = require('./api/models/forecast');
 
 const not_num = /[^\d.]+/g;
-const forecasts = [];
 
 class Vrijeme {
     constructor(datum, prijepodne, mintemp, poslijepodne, maxtemp) {
@@ -50,7 +52,7 @@ class Prognoza {
         return new Prognoza(grad, datum, vrijeme_mjerenja, vrijeme, temp, vlaznost, pritisak);
     }
 
-    addForecast(forecast) {
+    addWeather(forecast) {
         this.forecast.push(forecast);
     }
 }
@@ -62,27 +64,54 @@ const getXML = async () => {
     return body;
 }
 
+const connectToDb = () => {
+    let uri = process.env.MONGO;
+
+    return mongoose.connect(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        dbName: 'fhmz-weather'
+    });
+}
+
+const createForecast = json => {
+    let forecast = Prognoza.fromJson(json);
+
+    if (forecast.grad === 'Bihać') {
+        forecast.addWeather(Vrijeme.fromJson(json.vrijemedanas, forecast.datum));
+    } else {
+        forecast.addWeather(Vrijeme.fromJson(json.prognozadanas, forecast.datum));
+    }
+
+    forecast.addWeather(Vrijeme.fromJson(json.sutra));
+    forecast.addWeather(Vrijeme.fromJson(json.prekosutra));
+    forecast.addWeather(Vrijeme.fromJson(json.zakosutra));
+
+    return {
+        grad: forecast.grad,
+        datum: forecast.datum,
+        vrijeme_mjerenja: forecast.vrijeme_mjerenja,
+        vrijeme: forecast.vrijeme,
+        temp: forecast.temp,
+        vlaznost: forecast.vlaznost,
+        pritisak: forecast.pritisak,
+        forecasts: forecast.forecast
+    };
+}
+
 const main = async () => {
     let xml = await getXML();
     let json = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
 
-    json.vremenska.grad.forEach(grad => {
-        let prognoza = Prognoza.fromJson(grad);
+    let db = connectToDb();
 
-        if (prognoza.grad == 'Bihać') {
-            prognoza.addForecast(Vrijeme.fromJson(grad.vrijemedanas, prognoza.datum));
-        } else {
-            prognoza.addForecast(Vrijeme.fromJson(grad.prognozadanas, prognoza.datum));
-        }
+    for (const grad of json.vremenska.grad) {
+        const forecast = createForecast(grad);
 
-        prognoza.addForecast(Vrijeme.fromJson(grad.sutra));
-        prognoza.addForecast(Vrijeme.fromJson(grad.prekosutra));
-        prognoza.addForecast(Vrijeme.fromJson(grad.zakosutra));
+        await Forecast.findOneAndUpdate({ grad: forecast.grad }, forecast, { upsert: true, useFindAndModify: false });
+    }
 
-        forecasts.push(prognoza);
-    });
-
-    console.log(JSON.stringify(forecasts[0]));
+    (await db).disconnect();
 }
 
 main();

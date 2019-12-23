@@ -9,6 +9,8 @@
   "author": "Nedzad Alibegovic",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.8.2",
     "node-fetch": "^2.6.0",
     "xml-js": "^1.6.11"
   },
