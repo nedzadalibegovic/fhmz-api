@@ -1,23 +1,25 @@
 const fetch = require('node-fetch');
 const convert = require('xml-js');
 
+const not_num = /[^\d.]+/g;
+const forecasts = [];
+
 class Vrijeme {
     constructor(datum, prijepodne, mintemp, poslijepodne, maxtemp) {
-        this.datum = datum;
+        this.datum = datum.replace(not_num, '');
         this.prijepodne = prijepodne;
         this.mintemp = mintemp;
         this.poslijepodne = poslijepodne;
         this.maxtemp = maxtemp;
     }
 
-    // don't send 'danas' as param, it's missing datum
-    // param example: vremenska.grad[0].sutra
+    // param path: obj.vremenska.grad[number].<danas/sutra/prekosutra/zakosutra>
     static fromJson(json, date = json.datum._text) {
         let datum = date;
         let prijepodne = json.prijepodne._text;
         let mintemp = json.mintemp._text;
         let poslijepodne = json.poslijepodne._text;
-        let maxtemp = json.poslijepodne._text;
+        let maxtemp = json.maxtemp._text;
 
         return new Vrijeme(datum, prijepodne, mintemp, poslijepodne, maxtemp);
     }
@@ -29,18 +31,18 @@ class Prognoza {
         this.datum = datum;
         this.vrijeme_mjerenja = vrijeme_mjerenja;
         this.vrijeme = vrijeme;
-        this.temp = temp;
-        this.vlaznost = vlaznost;
-        this.pritisak = pritisak;
+        this.temp = temp.replace(not_num, '');
+        this.vlaznost = vlaznost.replace(not_num, '');
+        this.pritisak = pritisak.replace(not_num, '');
         this.forecast = [];
     }
 
-    // param example: vremenska.grad[1]
+    // param path: obj.vremenska.grad[index]
     static fromJson(json) {
         let grad = json._attributes.naziv;
         let datum = json.danas.datum._text;
         let vrijeme_mjerenja = json.danas.vrijememjerenja._text;
-        let vrijeme = json.danas.vrijeme._text;
+        let vrijeme = json.danas.vrijeme._text || '';
         let temp = json.danas.temperatura._text;
         let vlaznost = json.danas.vlaznost._text;
         let pritisak = json.danas.tlak._text;
@@ -60,29 +62,27 @@ const getXML = async () => {
     return body;
 }
 
-const jsonify = async () => {
+const main = async () => {
     let xml = await getXML();
     let json = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
-
-    let prognoze = [];
 
     json.vremenska.grad.forEach(grad => {
         let prognoza = Prognoza.fromJson(grad);
 
         if (prognoza.grad == 'Bihać') {
-            prognoza.addForecast(Vrijeme.fromJson(grad.vrijemedanas, null));
+            prognoza.addForecast(Vrijeme.fromJson(grad.vrijemedanas, prognoza.datum));
         } else {
-            prognoza.addForecast(Vrijeme.fromJson(grad.prognozadanas, null));
+            prognoza.addForecast(Vrijeme.fromJson(grad.prognozadanas, prognoza.datum));
         }
 
         prognoza.addForecast(Vrijeme.fromJson(grad.sutra));
         prognoza.addForecast(Vrijeme.fromJson(grad.prekosutra));
         prognoza.addForecast(Vrijeme.fromJson(grad.zakosutra));
 
-        prognoze.push(prognoza);
+        forecasts.push(prognoza);
     });
 
-    console.log(JSON.stringify(prognoze));
+    console.log(JSON.stringify(forecasts[0]));
 }
 
-jsonify();
+main();

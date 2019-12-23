@@ -1,13 +1,13 @@
 {
-  "name": "weather-app",
+  "name": "fhmz-api",
   "version": "0.0.1",
   "description": "weather-app",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "fetch": "node fetch_data.js"
   },
   "author": "Nedzad Alibegovic",
-  "license": "UNLICENSED",
+  "license": "ISC",
   "dependencies": {
     "node-fetch": "^2.6.0",
     "xml-js": "^1.6.11"
@@ -15,10 +15,16 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nedzadalibegovic/weather-app.git"
+    "url": "git+https://github.com/nedzadalibegovic/fhmz-api.git"
   },
   "bugs": {
-    "url": "https://github.com/nedzadalibegovic/weather-app/issues"
+    "url": "https://github.com/nedzadalibegovic/fhmz-api/issues"
   },
-  "homepage": "https://github.com/nedzadalibegovic/weather-app#readme"
+  "homepage": "https://github.com/nedzadalibegovic/fhmz-api/#readme",
+  "keywords": [
+    "fhmz",
+    "api",
+    "restful",
+    "node"
+  ]
 }
