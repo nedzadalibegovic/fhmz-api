@@ -70,7 +70,7 @@ const connectToDb = () => {
     return mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        dbName: 'fhmz-weather'
+        dbName: process.env.DB_NAME
     });
 }
 

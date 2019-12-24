@@ -18,3 +18,4 @@ jobs:
         run: node fetch_data.js
         env:
           MONGO: ${{ secrets.MONGO }}
+          DB_NAME: ${{ secrets.DB_NAME }}
