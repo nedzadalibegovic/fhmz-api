@@ -20,4 +20,6 @@ const forecastSchema = mongoose.Schema({
     versionKey: false
 });
 
+forecastSchema.index({ city: 'text' });
+
 module.exports = mongoose.model('Forecast', forecastSchema);
