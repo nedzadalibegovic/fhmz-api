@@ -1,5 +1,5 @@
-# RESTFul API for Federalni hidrometeorološki zavod
-Simple API that provides weather data for **nine** cities in Bosnia and Herzegovina (*Bihać, Banja Luka, Bugojno, Livno, Mostar, Sarajevo, Trebinje, Tuzla, Zenica*). Data is provided from an XML file hosted on the [Federalni hidrometeorološki zavod website](http://www.fhmzbih.gov.ba/) that is updated daily.
+# RESTFul API for Federal Hydrometeorological Institute
+Simple API that provides weather data for **nine** cities in Bosnia and Herzegovina (*Bihać, Banja Luka, Bugojno, Livno, Mostar, Sarajevo, Trebinje, Tuzla, Zenica*). Data is provided from an XML file hosted on the [Federal Hydrometeorological Institute website](http://www.fhmzbih.gov.ba/) that is updated daily.
 
 Currently, data is fetched every 6 hours, parsed, converted to JSON and saved to a MongoDB database. This functionality is provided in the `fetch_data.js` file, which is going to be deprecated with POST and PATCH methods in the near future.
 
