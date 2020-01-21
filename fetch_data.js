@@ -1,4 +1,3 @@
-require('dotenv').config();
 const fetch = require('node-fetch');
 const convert = require('xml-js');
 const mongoose = require('mongoose');
@@ -16,11 +15,7 @@ const getXML = async () => {
 const connectToDb = () => {
     let uri = process.env.MONGO;
 
-    return mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        dbName: process.env.DB_NAME
-    });
+    return mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
 }
 
 // param path: obj.vremenska.grad[index]
