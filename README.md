@@ -11,20 +11,17 @@ Currently supported routes and methods:
 | `/cities/` | `GET` |
 | `/cities/{city_name}` | `GET` |
 
-You can also send an `OPTIONS` request to the API to see supported methods.
-
 ## How can I host it myself?
-You need Node.js, MongoDB and two environment variables:
+You need Node.js, MongoDB and two environment variables (check the `.env_sample` file), if everything is set up properly, populate the database first with:
 
-    # MongoDB cluster
-    MONGO=mongodb+srv://<username>:<password>@<server>
-    # MongoDB database name (collection will be named 'forecasts')
-    DB_NAME=example
+    npm run fetch
 
-You need to populate the database first with:
+For running in a dev environment, you can use:
 
-    node fetch_data.js
+    npm run dev
 
-And then you can run the API using:
+For running in a production environment, you can use:
 
     npm start
+
+Check `package.json` to see how `npm run dev` and `npm start` differ.
