@@ -1,23 +1,24 @@
 {
   "name": "fhmz-api",
-  "version": "0.0.1",
-  "description": "weather-app",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "RESTFul API for Federal Hydrometeorological Institute",
+  "main": "app.js",
   "scripts": {
-    "fetch": "node fetch_data.js",
-    "start": "nodemon server.js"
+    "fetch": "node -r dotenv/config fetch_data.js",
+    "start": "node app.js",
+    "dev": "nodemon -r dotenv/config app.js"
   },
   "author": "Nedzad Alibegovic",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mongoose": "^5.8.2",
-    "morgan": "^1.9.1",
+    "mongoose": "^5.8.9",
     "node-fetch": "^2.6.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.2"
   },
   "repository": {
