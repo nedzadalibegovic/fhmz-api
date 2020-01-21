@@ -1,46 +1,33 @@
 const express = require('express');
 const Forecast = require('../models/forecast');
+
 const router = express.Router();
 
-// route: /cities
-router.get('/', (req, res, next) => {
-    Forecast.find()
-        .exec()
-        .then(docs => {
-            console.log(docs);
-            res.status(200).json(docs);
-        })
-        .catch(err => {
-            console.log(`Error: ${err}`);
-            res.status(500).json({
-                error: err
-            })
-        });
+// route: GET /cities
+router.get('/', async (req, res) => {
+    try {
+        let forecasts = await Forecast.find();
+        res.status(200).json(forecasts);
+    } catch (err) {
+        res.status(500).json({ message: err });
+    }
 });
 
-// route: /cities/<city_name>
-router.get('/:city', (req, res, next) => {
+// route: GET /cities/<city_name>
+router.get('/:city', async (req, res) => {
     const name = req.params.city;
 
-    Forecast.findOne({ $text: { $search: name } })
-        .exec()
-        .then(doc => {
-            console.log(doc);
+    try {
+        const city = await Forecast.findOne({ $text: { $search: name } });
 
-            if (doc === null) {
-                res.status(404).json({
-                    message: 'City not found'
-                });
-            } else {
-                res.status(200).json(doc);
-            }
-        })
-        .catch(err => {
-            console.log(`Error: ${err}`);
-            res.status(500).json({
-                error: err
-            })
-        });
+        if (city == null) {
+            res.status(404).json({ message: "City not found" });
+        } else {
+            res.status(200).json(city);
+        }
+    } catch (err) {
+        res.status(500).json({ message: err });
+    }
 });
 
 module.exports = router;
