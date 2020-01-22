@@ -5,8 +5,14 @@ const cityRoutes = require('./api/routes/cities');
 
 const app = express();
 
+// mongoose settings
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
 // establish db connection
-mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO);
 
 // middlewares
 app.use(cors());

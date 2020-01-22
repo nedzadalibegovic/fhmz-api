@@ -13,9 +13,12 @@ const getXML = async () => {
 }
 
 const connectToDb = () => {
-    let uri = process.env.MONGO;
+    mongoose.set('useNewUrlParser', true);
+    mongoose.set('useFindAndModify', false);
+    mongoose.set('useCreateIndex', true);
+    mongoose.set('useUnifiedTopology', true);
 
-    return mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+    return mongoose.connect(process.env.MONGO);
 }
 
 // param path: obj.vremenska.grad[index]
@@ -83,7 +86,7 @@ const main = async () => {
 
         addWeatherToForecast(grad, forecast);
 
-        await Forecast.findOneAndUpdate({ city: forecast.city }, forecast, { upsert: true, useFindAndModify: false });
+        await Forecast.findOneAndUpdate({ city: forecast.city }, forecast, { upsert: true });
     }
 
     (await db).disconnect();
