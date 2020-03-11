@@ -5,31 +5,27 @@ const Forecast = require('./api/models/forecast');
 
 const not_num = /[^\d.]+/g;
 
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
 const getXML = async () => {
-    let response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml');
-    let body = await response.text();
+    const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml');
+    const body = await response.text();
 
     return body;
 }
 
-const connectToDb = () => {
-    mongoose.set('useNewUrlParser', true);
-    mongoose.set('useFindAndModify', false);
-    mongoose.set('useCreateIndex', true);
-    mongoose.set('useUnifiedTopology', true);
-
-    return mongoose.connect(process.env.MONGO);
-}
-
 // param path: obj.vremenska.grad[index]
 const createForecastFromJson = (json) => {
-    let grad = json._attributes.naziv;
-    let datum = json.danas.datum._text;
-    let vrijeme_mjerenja = json.danas.vrijememjerenja._text;
-    let vrijeme = json.danas.vrijeme._text;
-    let temp = json.danas.temperatura._text.replace(not_num, '');
+    const grad = json._attributes.naziv;
+    const datum = json.danas.datum._text;
+    const vrijeme_mjerenja = json.danas.vrijememjerenja._text;
+    const vrijeme = json.danas.vrijeme._text;
+    const temp = json.danas.temperatura._text.replace(not_num, '');
     let vlaznost = json.danas.vlaznost._text.replace(not_num, '');
-    let pritisak = json.danas.tlak._text.replace(not_num, '');
+    const pritisak = json.danas.tlak._text.replace(not_num, '');
 
     if (vlaznost !== '') {
         vlaznost /= 100;
@@ -49,10 +45,10 @@ const createForecastFromJson = (json) => {
 
 // param path: obj.vremenska.grad[index].<danas/sutra/prekosutra/zakosutra>
 const createWeatherFromJson = (json, date = json.datum._text) => {
-    let prijepodne = json.prijepodne._text;
-    let mintemp = json.mintemp._text;
-    let poslijepodne = json.poslijepodne._text;
-    let maxtemp = json.maxtemp._text;
+    const prijepodne = json.prijepodne._text;
+    const mintemp = json.mintemp._text;
+    const poslijepodne = json.poslijepodne._text;
+    const maxtemp = json.maxtemp._text;
 
     return {
         date: date.replace(not_num, ''),
@@ -76,10 +72,10 @@ const addWeatherToForecast = (json, forecast) => {
 }
 
 const main = async () => {
-    let xml = await getXML();
-    let json = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
+    const xml = await getXML();
+    const json = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
 
-    let db = connectToDb();
+    await mongoose.connect(process.env.MONGO);
 
     for (const grad of json.vremenska.grad) {
         const forecast = createForecastFromJson(grad);
@@ -89,7 +85,7 @@ const main = async () => {
         await Forecast.findOneAndUpdate({ city: forecast.city }, forecast, { upsert: true });
     }
 
-    (await db).disconnect();
+    await mongoose.disconnect();
 }
 
 main();
