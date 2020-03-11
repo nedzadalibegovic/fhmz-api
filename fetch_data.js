@@ -1,24 +1,19 @@
 const fetch = require('node-fetch');
 const convert = require('xml-js');
 const mongoose = require('mongoose');
+const cron = require('node-cron');
 const Forecast = require('./api/models/forecast');
 
 const not_num = /[^\d.]+/g;
+let lastModified = new String();
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-const getXML = async () => {
-    const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml');
-    const body = await response.text();
-
-    return body;
-};
-
 // param path: obj.vremenska.grad[index]
-const createForecastFromJson = (json) => {
+const createForecast = (json) => {
     const grad = json._attributes.naziv;
     const datum = json.danas.datum._text;
     const vrijeme_mjerenja = json.danas.vrijememjerenja._text;
@@ -44,7 +39,7 @@ const createForecastFromJson = (json) => {
 };
 
 // param path: obj.vremenska.grad[index].<danas/sutra/prekosutra/zakosutra>
-const createWeatherFromJson = (json, date = json.datum._text) => {
+const createWeather = (json, date = json.datum._text) => {
     const prijepodne = json.prijepodne._text;
     const mintemp = json.mintemp._text;
     const poslijepodne = json.poslijepodne._text;
@@ -61,24 +56,23 @@ const createWeatherFromJson = (json, date = json.datum._text) => {
 
 const addWeatherToForecast = (json, forecast) => {
     if (forecast.city === 'Bihać') {
-        forecast.forecasts.push(createWeatherFromJson(json.vrijemedanas, forecast.date));
+        forecast.forecasts.push(createWeather(json.vrijemedanas, forecast.date));
     } else {
-        forecast.forecasts.push(createWeatherFromJson(json.prognozadanas, forecast.date));
+        forecast.forecasts.push(createWeather(json.prognozadanas, forecast.date));
     }
 
-    forecast.forecasts.push(createWeatherFromJson(json.sutra));
-    forecast.forecasts.push(createWeatherFromJson(json.prekosutra));
-    forecast.forecasts.push(createWeatherFromJson(json.zakosutra));
+    forecast.forecasts.push(createWeather(json.sutra));
+    forecast.forecasts.push(createWeather(json.prekosutra));
+    forecast.forecasts.push(createWeather(json.zakosutra));
 };
 
-const main = async () => {
-    const xml = await getXML();
-    const json = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
+const submitToDb = async (xml) => {
+    const parsedData = JSON.parse(convert.xml2json(xml, { compact: true, spaces: 4 }));
 
     await mongoose.connect(process.env.MONGO);
 
-    for (const grad of json.vremenska.grad) {
-        const forecast = createForecastFromJson(grad);
+    for (const grad of parsedData.vremenska.grad) {
+        const forecast = createForecast(grad);
 
         addWeatherToForecast(grad, forecast);
 
@@ -88,4 +82,25 @@ const main = async () => {
     await mongoose.disconnect();
 };
 
-main();
+const firstRun = async () => {
+    const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml');
+    await submitToDb(await response.text());
+    lastModified = response.headers.get('last-modified');
+};
+
+firstRun();
+
+cron.schedule(process.env.CRON, async () => {
+    const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml', {
+        headers: {
+            'If-Modified-Since': lastModified
+        }
+    });
+
+    if (response.ok) {
+        await submitToDb(await response.text());
+        lastModified = response.headers.get('last-modified');
+    }
+
+    console.log(`${new Date().toUTCString()} - ${response.status} - ${response.statusText}`);
+});
