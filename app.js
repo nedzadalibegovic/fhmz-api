@@ -21,6 +21,6 @@ app.use('/cities', cityRoutes);
 // routes
 app.get('/', (req, res) => {
     res.redirect(302, process.env.REDIRECT);
-})
+});
 
 app.listen(process.env.PORT || 3000);

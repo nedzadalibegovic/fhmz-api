@@ -15,7 +15,7 @@ const getXML = async () => {
     const body = await response.text();
 
     return body;
-}
+};
 
 // param path: obj.vremenska.grad[index]
 const createForecastFromJson = (json) => {
@@ -41,7 +41,7 @@ const createForecastFromJson = (json) => {
         pressure: pritisak,
         forecasts: []
     };
-}
+};
 
 // param path: obj.vremenska.grad[index].<danas/sutra/prekosutra/zakosutra>
 const createWeatherFromJson = (json, date = json.datum._text) => {
@@ -57,7 +57,7 @@ const createWeatherFromJson = (json, date = json.datum._text) => {
         morning: prijepodne,
         afternoon: poslijepodne
     };
-}
+};
 
 const addWeatherToForecast = (json, forecast) => {
     if (forecast.city === 'Bihać') {
@@ -69,7 +69,7 @@ const addWeatherToForecast = (json, forecast) => {
     forecast.forecasts.push(createWeatherFromJson(json.sutra));
     forecast.forecasts.push(createWeatherFromJson(json.prekosutra));
     forecast.forecasts.push(createWeatherFromJson(json.zakosutra));
-}
+};
 
 const main = async () => {
     const xml = await getXML();
@@ -86,6 +86,6 @@ const main = async () => {
     }
 
     await mongoose.disconnect();
-}
+};
 
 main();

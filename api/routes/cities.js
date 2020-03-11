@@ -21,7 +21,7 @@ router.get('/:city', async (req, res) => {
         const city = await Forecast.findOne({ $text: { $search: name } }, { _id: false, 'forecasts._id': false });
 
         if (city == null) {
-            res.status(404).json({ message: "City not found" });
+            res.status(404).json({ message: 'City not found' });
         } else {
             res.status(200).json(city);
         }
