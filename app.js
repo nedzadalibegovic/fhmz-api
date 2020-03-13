@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const cityRoutes = require('./api/routes/cities');
 
 const app = express();
@@ -15,12 +17,9 @@ mongoose.set('useUnifiedTopology', true);
 mongoose.connect(process.env.MONGO);
 
 // middlewares
+app.use(helmet());
+app.use(morgan('common'));
 app.use(cors());
 app.use('/cities', cityRoutes);
-
-// routes
-app.get('/', (req, res) => {
-    res.redirect(302, process.env.REDIRECT);
-});
 
 app.listen(process.env.PORT || 3000);
