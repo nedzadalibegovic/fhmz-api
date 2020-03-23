@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
 const { parseStringPromise } = require('xml2js');
+const moment = require('moment');
 const Forecast = require('./api/models/forecast');
 
 const not_num = /[^\d.]+/g;
@@ -12,7 +13,11 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-const createForecast = (grad) => {
+const createTimestamp = (datum, vrijememjerenja = '01:00') => {
+    return moment(`${datum} ${vrijememjerenja} +0100`, 'DD.MM.YYYY HH:mm Z').toDate();
+};
+
+const createCity = (grad) => {
     let vlaznost = grad.danas.vlaznost.replace(not_num, '');
 
     if (vlaznost !== '') {
@@ -21,9 +26,8 @@ const createForecast = (grad) => {
 
     return {
         city: grad.naziv,
-        date: grad.danas.datum,
-        time: grad.danas.vrijememjerenja,
-        weather: grad.danas.vrijeme,
+        timestamp: createTimestamp(grad.danas.datum, grad.danas.vrijememjerenja),
+        description: grad.danas.vrijeme,
         temperature: grad.danas.temperatura.replace(not_num, ''),
         humidity: vlaznost,
         pressure: grad.danas.tlak.replace(not_num, ''),
@@ -31,26 +35,26 @@ const createForecast = (grad) => {
     };
 };
 
-const createWeather = (grad, date = grad.datum) => {
+const createForecast = (forecast, datum = forecast.datum.replace(not_num, '')) => {
     return {
-        date: date.replace(not_num, ''),
-        low: grad.mintemp,
-        high: grad.maxtemp,
-        morning: grad.prijepodne,
-        afternoon: grad.poslijepodne
+        date: createTimestamp(datum),
+        low: forecast.mintemp,
+        high: forecast.maxtemp,
+        morning: forecast.prijepodne,
+        afternoon: forecast.poslijepodne
     };
 };
 
-const addWeatherToForecast = (grad, cityForecast) => {
+const addForecastsToCity = (grad, cityForecast) => {
     if (cityForecast.city === 'Bihać') {
-        cityForecast.forecasts.push(createWeather(grad.vrijemedanas, cityForecast.date));
+        cityForecast.forecasts.push(createForecast(grad.vrijemedanas, grad.danas.datum));
     } else {
-        cityForecast.forecasts.push(createWeather(grad.prognozadanas, cityForecast.date));
+        cityForecast.forecasts.push(createForecast(grad.prognozadanas, grad.danas.datum));
     }
 
-    cityForecast.forecasts.push(createWeather(grad.sutra));
-    cityForecast.forecasts.push(createWeather(grad.prekosutra));
-    cityForecast.forecasts.push(createWeather(grad.zakosutra));
+    cityForecast.forecasts.push(createForecast(grad.sutra));
+    cityForecast.forecasts.push(createForecast(grad.prekosutra));
+    cityForecast.forecasts.push(createForecast(grad.zakosutra));
 };
 
 const submitToDb = async (xml) => {
@@ -64,9 +68,9 @@ const submitToDb = async (xml) => {
     await mongoose.connect(process.env.MONGO);
 
     for (const grad of parsed.grad) {
-        const cityForecast = createForecast(grad);
+        const cityForecast = createCity(grad);
 
-        addWeatherToForecast(grad, cityForecast);
+        addForecastsToCity(grad, cityForecast);
 
         await Forecast.findOneAndUpdate({ city: cityForecast.city }, cityForecast, { upsert: true });
     }

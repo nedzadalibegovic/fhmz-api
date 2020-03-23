@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 
 const forecastSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     city: String,
-    date: String,
-    time: String,
-    weather: String,
+    timestamp: Date,
+    description: String,
     temperature: Number,
     humidity: Number,
     pressure: Number,
     forecasts: [{
-        date: String,
+        date: Date,
         low: Number,
         high: Number,
         morning: String,
