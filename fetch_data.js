@@ -5,7 +5,7 @@ const cron = require('node-cron');
 const Forecast = require('./api/models/forecast');
 
 const not_num = /[^\d.]+/g;
-let lastModified = new String();
+let lastModified = '';
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -81,14 +81,6 @@ const submitToDb = async (xml) => {
 
     await mongoose.disconnect();
 };
-
-const firstRun = async () => {
-    const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml');
-    await submitToDb(await response.text());
-    lastModified = response.headers.get('last-modified');
-};
-
-firstRun();
 
 cron.schedule(process.env.CRON, async () => {
     const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml', {
