@@ -7,6 +7,9 @@ const cityRoutes = require('./api/routes/cities');
 
 const app = express();
 
+// running behind proxy
+app.set('trust proxy', '172.17.0.1');
+
 // mongoose settings
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
