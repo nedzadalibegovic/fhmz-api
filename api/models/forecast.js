@@ -7,6 +7,8 @@ const forecastSchema = mongoose.Schema({
     temperature: Number,
     humidity: Number,
     pressure: Number,
+    windSpeed: Number,
+    windDirection: String,
     forecasts: [{
         date: Date,
         low: Number,

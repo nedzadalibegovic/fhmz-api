@@ -27,10 +27,12 @@ const createCity = (grad) => {
     return {
         city: grad.naziv,
         timestamp: createTimestamp(grad.danas.datum, grad.danas.vrijememjerenja),
-        description: grad.danas.vrijeme,
+        description: /\S/.test(grad.danas.vrijeme) ? grad.danas.vrijeme : null,
         temperature: grad.danas.temperatura.replace(not_num, ''),
         humidity: vlaznost,
         pressure: grad.danas.tlak.replace(not_num, ''),
+        windSpeed: grad.danas.brzinavjetra[1].replace(not_num, ''),
+        windDirection: /\S/.test(grad.danas.smjervjetra) ? grad.danas.smjervjetra : null,
         forecasts: []
     };
 };
