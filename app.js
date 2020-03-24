@@ -25,4 +25,9 @@ app.use(morgan('common'));
 app.use(cors());
 app.use('/cities', cityRoutes);
 
+// redirect
+app.get('*', (req, res) => {
+    res.redirect(307, process.env.REDIRECT);
+});
+
 app.listen(process.env.PORT || 3000);
