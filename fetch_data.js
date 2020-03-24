@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cron = require('node-cron');
 const { parseStringPromise } = require('xml2js');
 const moment = require('moment');
-const Forecast = require('./api/models/forecast');
+const Forecast = require('./models/forecast');
 
 const not_num = /[^\d.]+/g;
 let lastModified = '';
