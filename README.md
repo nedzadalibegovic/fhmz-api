@@ -3,6 +3,13 @@ REST API that provides weather data for **nine** cities in Bosnia and Herzegovin
 
 Data fetching functionality is provided in the `fetch_data.js` file.
 
+## API servers
+
+| Server | Location |
+| --- | --- |
+| fhmi.orion.nedzad.dev | EU (Germany) |
+| fhmi.hydrus.nedzad.dev | US (East Coast) |
+
 ## What routes and methods do you support?
 Currently supported routes and methods:
 
