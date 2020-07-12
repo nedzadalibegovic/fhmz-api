@@ -9,7 +9,7 @@ const errorHandler = require('./routes/errorHandler');
 const app = express();
 
 // running behind proxy
-app.set('trust proxy', '172.17.0.1');
+app.set('trust proxy', 'uniquelocal');
 
 // mongoose settings
 mongoose.set('useNewUrlParser', true);
