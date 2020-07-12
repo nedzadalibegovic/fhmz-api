@@ -67,7 +67,7 @@ const submitToDb = async (xml) => {
         mergeAttrs: true,
     });
 
-    await mongoose.connect(process.env.MONGO);
+    await mongoose.connect(process.env.MONGO_URL);
 
     for (const grad of parsed.grad) {
         const cityForecast = createCity(grad);
