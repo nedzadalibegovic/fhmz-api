@@ -17,7 +17,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 // establish db connection
-mongoose.connect(process.env.MONGO);
+mongoose.connect(process.env.MONGO_URL);
 
 // middlewares
 app.use(helmet());
