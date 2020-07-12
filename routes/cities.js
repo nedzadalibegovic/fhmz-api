@@ -4,29 +4,30 @@ const Forecast = require('../models/forecast');
 const router = express.Router();
 
 // route: GET /cities
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         let forecasts = await Forecast.find({}, { _id: false, 'forecasts._id': false });
-        res.status(200).json(forecasts);
+        res.json(forecasts);
     } catch (err) {
-        res.status(500).json({ message: err });
+        next(err);
     }
 });
 
 // route: GET /cities/<city_name>
-router.get('/:city', async (req, res) => {
+router.get('/:city', async (req, res, next) => {
     const name = req.params.city;
 
     try {
         const city = await Forecast.findOne({ $text: { $search: name } }, { _id: false, 'forecasts._id': false });
 
         if (city == null) {
-            res.status(404).json({ message: 'City not found' });
-        } else {
-            res.status(200).json(city);
+            res.status(404);
+            throw new Error('City not found');
         }
+
+        res.json(city);
     } catch (err) {
-        res.status(500).json({ message: err });
+        next(err);
     }
 });
 

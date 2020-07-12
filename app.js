@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cityRoutes = require('./routes/cities');
+const errorHandler = require('./routes/errorHandler');
 
 const app = express();
 
@@ -29,5 +30,7 @@ app.use('/cities', cityRoutes);
 app.get('*', (req, res) => {
     res.redirect(307, process.env.REDIRECT);
 });
+
+app.use(errorHandler);
 
 app.listen(process.env.PORT || 3000);
