@@ -33,7 +33,7 @@ const createCity = (grad) => {
         pressure: grad.danas.tlak.replace(not_num, ''),
         windSpeed: grad.danas.brzinavjetra[1].replace(not_num, ''),
         windDirection: /\S/.test(grad.danas.smjervjetra) ? grad.danas.smjervjetra : null,
-        forecasts: []
+        forecasts: [],
     };
 };
 
@@ -43,7 +43,7 @@ const createForecast = (forecast, datum = forecast.datum.replace(not_num, '')) =
         low: forecast.mintemp,
         high: forecast.maxtemp,
         morning: forecast.prijepodne,
-        afternoon: forecast.poslijepodne
+        afternoon: forecast.poslijepodne,
     };
 };
 
@@ -64,7 +64,7 @@ const submitToDb = async (xml) => {
         trim: true,
         explicitArray: false,
         explicitRoot: false,
-        mergeAttrs: true
+        mergeAttrs: true,
     });
 
     await mongoose.connect(process.env.MONGO);
@@ -83,8 +83,8 @@ const submitToDb = async (xml) => {
 cron.schedule(process.env.CRON, async () => {
     const response = await fetch('http://www.fhmzbih.gov.ba/RSS/FHMZBIH1.xml', {
         headers: {
-            'If-Modified-Since': lastModified
-        }
+            'If-Modified-Since': lastModified,
+        },
     });
 
     if (response.ok) {

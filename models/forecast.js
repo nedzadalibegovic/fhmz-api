@@ -1,24 +1,29 @@
 const mongoose = require('mongoose');
 
-const forecastSchema = mongoose.Schema({
-    city: String,
-    timestamp: Date,
-    description: String,
-    temperature: Number,
-    humidity: Number,
-    pressure: Number,
-    windSpeed: Number,
-    windDirection: String,
-    forecasts: [{
-        date: Date,
-        low: Number,
-        high: Number,
-        morning: String,
-        afternoon: String
-    }]
-}, {
-    versionKey: false
-});
+const forecastSchema = mongoose.Schema(
+    {
+        city: String,
+        timestamp: Date,
+        description: String,
+        temperature: Number,
+        humidity: Number,
+        pressure: Number,
+        windSpeed: Number,
+        windDirection: String,
+        forecasts: [
+            {
+                date: Date,
+                low: Number,
+                high: Number,
+                morning: String,
+                afternoon: String,
+            },
+        ],
+    },
+    {
+        versionKey: false,
+    }
+);
 
 forecastSchema.index({ city: 'text' });
 
