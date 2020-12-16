@@ -1,0 +1,45 @@
+name: "Dokku Deploy"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  cancel-previous:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+
+  deploy-elara:
+    needs: cancel-previous
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.ELARA_DEPLOY_URL }}
+          ssh_private_key: ${{ secrets.ELARA_SSH_KEY }}
+
+  deploy-hydrus:
+    needs: cancel-previous
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.HYDRUS_DEPLOY_URL }}
+          ssh_private_key: ${{ secrets.HYDRUS_SSH_KEY }}
