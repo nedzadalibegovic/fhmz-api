@@ -8,7 +8,7 @@ Data fetching functionality is provided in the `fetch_data.js` file.
 
 | Server                 | Location        |
 | ---------------------- | --------------- |
-| fhmi.lyra.nedzad.dev   | EU (Germany)    |
+| fhmi.elara.nedzad.dev   | EU (Germany)    |
 | fhmi.hydrus.nedzad.dev | US (East Coast) |
 
 ## What routes and methods do you support?
