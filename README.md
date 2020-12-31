@@ -6,10 +6,10 @@ Data fetching functionality is provided in the `fetch_data.js` file.
 
 ## API servers
 
-| Server                 | Location        |
-| ---------------------- | --------------- |
-| fhmi.elara.nedzad.dev   | EU (Germany)    |
-| fhmi.hydrus.nedzad.dev | US (East Coast) |
+| Server                   | Location |
+| ------------------------ | -------- |
+| fhmi.emerald.nedzad.dev  | EU       |
+| fhmi.sapphire.nedzad.dev | US       |
 
 ## What routes and methods do you support?
 

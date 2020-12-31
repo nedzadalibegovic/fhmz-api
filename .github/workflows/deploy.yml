@@ -14,7 +14,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  deploy-elara:
+  deploy-emerald:
     needs: cancel-previous
     runs-on: ubuntu-latest
     steps:
@@ -26,10 +26,10 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: ${{ secrets.ELARA_DEPLOY_URL }}
-          ssh_private_key: ${{ secrets.ELARA_SSH_KEY }}
+          git_remote_url: ${{ secrets.EMERALD_DEPLOY_URL }}
+          ssh_private_key: ${{ secrets.EMERALD_SSH_KEY }}
 
-  deploy-hydrus:
+  deploy-sapphire:
     needs: cancel-previous
     runs-on: ubuntu-latest
     steps:
@@ -41,5 +41,5 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: ${{ secrets.HYDRUS_DEPLOY_URL }}
-          ssh_private_key: ${{ secrets.HYDRUS_SSH_KEY }}
+          git_remote_url: ${{ secrets.SAPPHIRE_DEPLOY_URL }}
+          ssh_private_key: ${{ secrets.SAPPHIRE_SSH_KEY }}
