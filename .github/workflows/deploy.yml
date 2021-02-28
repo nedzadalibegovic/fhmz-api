@@ -1,4 +1,4 @@
-name: "deploy"
+name: "Dokku Deploy"
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  server:
+  deployment:
     needs: cancel-previous
     runs-on: ubuntu-latest
     steps:
@@ -28,3 +28,4 @@ jobs:
         with:
           git_remote_url: ${{ secrets.DEPLOY_URL }}
           ssh_private_key: ${{ secrets.SSH_KEY }}
+          ssh_host_key: ${{ secrets.HOST_KEY }}
